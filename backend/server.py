@@ -7,8 +7,8 @@ import logging
 from pathlib import Path
 
 # Import routes
-from routes.transactions import router as transactions_router
-from routes.budgets import router as budgets_router
+from .routes.transactions import router as transactions_router
+from .routes.budgets import router as budgets_router
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
