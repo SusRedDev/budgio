@@ -24,9 +24,13 @@ const TransactionList = ({ filters, onEdit }) => {
     });
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this transaction?')) {
-      deleteTransaction(id);
+      try {
+        await deleteTransaction(id);
+      } catch (error) {
+        alert('Error deleting transaction: ' + error.message);
+      }
     }
   };
 
