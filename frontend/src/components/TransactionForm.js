@@ -25,7 +25,7 @@ const TransactionForm = ({ transaction, onClose }) => {
     }
   }, [transaction]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (!formData.category || !formData.amount || !formData.description) {
@@ -33,18 +33,22 @@ const TransactionForm = ({ transaction, onClose }) => {
       return;
     }
 
-    const transactionData = {
-      ...formData,
-      amount: parseFloat(formData.amount)
-    };
+    try {
+      const transactionData = {
+        ...formData,
+        amount: parseFloat(formData.amount)
+      };
 
-    if (transaction) {
-      updateTransaction(transaction.id, transactionData);
-    } else {
-      addTransaction(transactionData);
+      if (transaction) {
+        await updateTransaction(transaction.id, transactionData);
+      } else {
+        await addTransaction(transactionData);
+      }
+
+      onClose();
+    } catch (error) {
+      alert('Error saving transaction: ' + error.message);
     }
-
-    onClose();
   };
 
   const handleChange = (e) => {
