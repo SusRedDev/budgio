@@ -1,14 +1,17 @@
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
 from fastapi import FastAPI, APIRouter
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
-import os
 import logging
 from pathlib import Path
 
 # Import routes
-from .routes.transactions import router as transactions_router
-from .routes.budgets import router as budgets_router
+from routes.transactions import router as transactions_router
+from routes.budgets import router as budgets_router
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
