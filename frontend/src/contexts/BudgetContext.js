@@ -148,6 +148,8 @@ export const BudgetProvider = ({ children }) => {
     budgets,
     currentMonth,
     currentYear,
+    loading,
+    error,
     setCurrentMonth,
     setCurrentYear,
     addTransaction,
@@ -158,6 +160,7 @@ export const BudgetProvider = ({ children }) => {
     getMonthlyIncome,
     getMonthlyExpenses,
     getCategoryTotals,
+    loadData,
   };
 
   return (
