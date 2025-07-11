@@ -4,7 +4,7 @@ from datetime import datetime
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 
-from ..models.budget import Budget, BudgetCreate, BudgetUpdate
+from models.budget import Budget, BudgetCreate, BudgetUpdate
 
 router = APIRouter()
 
