@@ -4,7 +4,7 @@ from datetime import datetime
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 
-from models.transaction import Transaction, TransactionCreate, TransactionUpdate
+from ..models.transaction import Transaction, TransactionCreate, TransactionUpdate
 
 router = APIRouter()
 
