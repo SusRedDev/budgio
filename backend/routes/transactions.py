@@ -3,8 +3,14 @@ from typing import List, Optional
 from datetime import datetime
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
+from dotenv import load_dotenv
+from pathlib import Path
 
 from models.transaction import Transaction, TransactionCreate, TransactionUpdate
+
+# Load environment variables
+ROOT_DIR = Path(__file__).parent.parent
+load_dotenv(ROOT_DIR / '.env')
 
 router = APIRouter()
 
