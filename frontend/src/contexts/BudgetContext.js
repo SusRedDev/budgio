@@ -53,38 +53,60 @@ export const BudgetProvider = ({ children }) => {
     }
   };
 
-  const addTransaction = (transaction) => {
-    const newTransaction = {
-      id: Date.now().toString(),
-      ...transaction,
-      createdAt: new Date().toISOString(),
-    };
-    setTransactions(prev => [newTransaction, ...prev]);
+  const addTransaction = async (transaction) => {
+    try {
+      const response = await axios.post(`${API_BASE_URL}/transactions`, transaction);
+      setTransactions(prev => [response.data, ...prev]);
+      return response.data;
+    } catch (err) {
+      console.error('Error adding transaction:', err);
+      throw new Error('Failed to add transaction');
+    }
   };
 
-  const updateTransaction = (id, updatedTransaction) => {
-    setTransactions(prev => 
-      prev.map(transaction => 
-        transaction.id === id ? { ...transaction, ...updatedTransaction } : transaction
-      )
-    );
+  const updateTransaction = async (id, updatedTransaction) => {
+    try {
+      const response = await axios.put(`${API_BASE_URL}/transactions/${id}`, updatedTransaction);
+      setTransactions(prev => 
+        prev.map(transaction => 
+          transaction.id === id ? response.data : transaction
+        )
+      );
+      return response.data;
+    } catch (err) {
+      console.error('Error updating transaction:', err);
+      throw new Error('Failed to update transaction');
+    }
   };
 
-  const deleteTransaction = (id) => {
-    setTransactions(prev => prev.filter(transaction => transaction.id !== id));
+  const deleteTransaction = async (id) => {
+    try {
+      await axios.delete(`${API_BASE_URL}/transactions/${id}`);
+      setTransactions(prev => prev.filter(transaction => transaction.id !== id));
+    } catch (err) {
+      console.error('Error deleting transaction:', err);
+      throw new Error('Failed to delete transaction');
+    }
   };
 
-  const updateBudget = (category, amount) => {
-    setBudgets(prev => {
-      const existingBudget = prev.find(b => b.category === category);
-      if (existingBudget) {
-        return prev.map(b => 
-          b.category === category ? { ...b, amount } : b
-        );
-      } else {
-        return [...prev, { category, amount }];
-      }
-    });
+  const updateBudget = async (category, amount) => {
+    try {
+      const response = await axios.put(`${API_BASE_URL}/budgets/${category}`, { amount });
+      setBudgets(prev => {
+        const existingBudget = prev.find(b => b.category === category);
+        if (existingBudget) {
+          return prev.map(b => 
+            b.category === category ? response.data : b
+          );
+        } else {
+          return [...prev, response.data];
+        }
+      });
+      return response.data;
+    } catch (err) {
+      console.error('Error updating budget:', err);
+      throw new Error('Failed to update budget');
+    }
   };
 
   const getMonthlyTransactions = () => {
