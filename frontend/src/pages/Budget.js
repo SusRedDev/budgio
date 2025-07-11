@@ -17,18 +17,26 @@ const Budget = () => {
     return budgets.find(b => b.category === category);
   };
 
-  const handleUpdateBudget = (category, amount) => {
-    updateBudget(category, parseFloat(amount));
-    setEditingBudget(null);
-    setNewBudgetAmount('');
+  const handleUpdateBudget = async (category, amount) => {
+    try {
+      await updateBudget(category, parseFloat(amount));
+      setEditingBudget(null);
+      setNewBudgetAmount('');
+    } catch (error) {
+      alert('Error updating budget: ' + error.message);
+    }
   };
 
-  const handleAddBudget = () => {
+  const handleAddBudget = async () => {
     if (newCategory && newBudgetAmount) {
-      updateBudget(newCategory, parseFloat(newBudgetAmount));
-      setNewCategory('');
-      setNewBudgetAmount('');
-      setShowAddForm(false);
+      try {
+        await updateBudget(newCategory, parseFloat(newBudgetAmount));
+        setNewCategory('');
+        setNewBudgetAmount('');
+        setShowAddForm(false);
+      } catch (error) {
+        alert('Error adding budget: ' + error.message);
+      }
     }
   };
 
