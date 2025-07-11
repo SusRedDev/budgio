@@ -1,7 +1,9 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { mockTransactions, mockBudgets } from '../data/mockData';
+import axios from 'axios';
 
 const BudgetContext = createContext();
+
+const API_BASE_URL = process.env.REACT_APP_BACKEND_URL + '/api';
 
 export const useBudget = () => {
   const context = useContext(BudgetContext);
@@ -16,33 +18,40 @@ export const BudgetProvider = ({ children }) => {
   const [budgets, setBudgets] = useState([]);
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Load data from localStorage or use mock data
+  // Load data from API
   useEffect(() => {
-    const savedTransactions = localStorage.getItem('budget-transactions');
-    const savedBudgets = localStorage.getItem('budget-budgets');
-    
-    if (savedTransactions) {
-      setTransactions(JSON.parse(savedTransactions));
-    } else {
-      setTransactions(mockTransactions);
+    loadData();
+  }, [currentMonth, currentYear]);
+
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Load transactions with current month/year filter
+      const transactionsResponse = await axios.get(`${API_BASE_URL}/transactions`, {
+        params: {
+          month: currentMonth + 1, // API expects 1-12, JS uses 0-11
+          year: currentYear,
+          limit: 1000
+        }
+      });
+      
+      // Load budgets
+      const budgetsResponse = await axios.get(`${API_BASE_URL}/budgets`);
+      
+      setTransactions(transactionsResponse.data);
+      setBudgets(budgetsResponse.data);
+    } catch (err) {
+      console.error('Error loading data:', err);
+      setError('Failed to load data');
+    } finally {
+      setLoading(false);
     }
-    
-    if (savedBudgets) {
-      setBudgets(JSON.parse(savedBudgets));
-    } else {
-      setBudgets(mockBudgets);
-    }
-  }, []);
-
-  // Save to localStorage whenever data changes
-  useEffect(() => {
-    localStorage.setItem('budget-transactions', JSON.stringify(transactions));
-  }, [transactions]);
-
-  useEffect(() => {
-    localStorage.setItem('budget-budgets', JSON.stringify(budgets));
-  }, [budgets]);
+  };
 
   const addTransaction = (transaction) => {
     const newTransaction = {
