@@ -8,7 +8,8 @@ import {
   TrendingUp,
   Settings,
   LogOut,
-  Shield
+  Shield,
+  MessageCircle
 } from 'lucide-react';
 
 const Navigation = () => {
@@ -19,6 +20,7 @@ const Navigation = () => {
     { path: '/', label: 'Dashboard', icon: LayoutDashboard },
     { path: '/transactions', label: 'Transactions', icon: CreditCard },
     { path: '/budget', label: 'Budget', icon: PiggyBank },
+    { path: '/chat', label: 'Chat', icon: MessageCircle },
     { path: '/settings', label: 'Settings', icon: Settings },
   ];
 
