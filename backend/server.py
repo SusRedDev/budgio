@@ -56,6 +56,7 @@ async def health_check():
 api_router.include_router(auth_router, tags=["authentication"])
 api_router.include_router(transactions_router, tags=["transactions"])
 api_router.include_router(budgets_router, tags=["budgets"])
+api_router.include_router(chat_router, prefix="/chat", tags=["chat"])
 
 # Include the main router in the app
 app.include_router(api_router)
