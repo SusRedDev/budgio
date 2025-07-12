@@ -1,20 +1,30 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import { 
   LayoutDashboard, 
   CreditCard, 
   PiggyBank, 
-  TrendingUp 
+  TrendingUp,
+  Settings,
+  LogOut,
+  Shield
 } from 'lucide-react';
 
 const Navigation = () => {
   const location = useLocation();
+  const { user, logout, isPanicMode } = useAuth();
 
   const navItems = [
     { path: '/', label: 'Dashboard', icon: LayoutDashboard },
     { path: '/transactions', label: 'Transactions', icon: CreditCard },
     { path: '/budget', label: 'Budget', icon: PiggyBank },
+    { path: '/settings', label: 'Settings', icon: Settings },
   ];
+
+  const handleLogout = () => {
+    logout();
+  };
 
   return (
     <nav className="fixed left-0 top-0 h-screen w-64 bg-white/80 backdrop-blur-xl border-r border-white/20 shadow-xl">
@@ -26,6 +36,22 @@ const Navigation = () => {
           <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
             Budget Planner
           </h1>
+        </div>
+        
+        {/* User info with panic mode indicator */}
+        <div className="mb-6 p-3 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl">
+          <div className="flex items-center gap-2 mb-1">
+            <p className="text-sm font-medium text-gray-800">
+              {user?.full_name || user?.username}
+            </p>
+            {isPanicMode && (
+              <span className="px-2 py-1 bg-orange-100 text-orange-700 text-xs font-medium rounded-full flex items-center gap-1">
+                <Shield className="w-3 h-3" />
+                Panic
+              </span>
+            )}
+          </div>
+          <p className="text-xs text-gray-500">{user?.email}</p>
         </div>
         
         <ul className="space-y-2">
@@ -47,6 +73,17 @@ const Navigation = () => {
             </li>
           ))}
         </ul>
+
+        {/* Logout button */}
+        <div className="mt-8">
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group w-full text-left hover:bg-red-50 text-gray-700 hover:text-red-600"
+          >
+            <LogOut className="w-5 h-5 text-gray-500 group-hover:text-red-600 transition-colors" />
+            <span className="font-medium">Logout</span>
+          </button>
+        </div>
       </div>
     </nav>
   );
