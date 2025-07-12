@@ -26,6 +26,11 @@ export const BudgetProvider = ({ children }) => {
     loadData();
   }, [currentMonth, currentYear]);
 
+  // Load data from API
+  useEffect(() => {
+    loadData();
+  }, [currentMonth, currentYear]);
+
   const loadData = async () => {
     try {
       setLoading(true);
