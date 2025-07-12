@@ -19,6 +19,8 @@ const Layout = () => {
         return 'Budget';
       case '/settings':
         return 'Settings';
+      case '/chat':
+        return 'Chat';
       default:
         return 'Budget Planner';
     }
