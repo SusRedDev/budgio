@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import DeleteAccountModal from '../components/DeleteAccountModal';
 import { 
   Shield, 
   ShieldOff, 
@@ -8,7 +9,8 @@ import {
   Lock, 
   User, 
   Save,
-  AlertTriangle
+  AlertTriangle,
+  Trash2
 } from 'lucide-react';
 
 const Settings = () => {
@@ -36,6 +38,7 @@ const Settings = () => {
   });
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const handleTravelModeSubmit = async (e) => {
     e.preventDefault();
@@ -96,7 +99,7 @@ const Settings = () => {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 shadow-lg">
+      <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 shadow-lg border border-purple-100">
         <h2 className="text-xl font-semibold text-gray-800 mb-6">Account Settings</h2>
         
         <div className="space-y-4">
@@ -133,9 +136,9 @@ const Settings = () => {
       </div>
 
       {/* Travel Mode Settings */}
-      <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 shadow-lg">
+      <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 shadow-lg border border-purple-100">
         <div className="flex items-center gap-3 mb-6">
-          <Shield className="w-6 h-6 text-blue-600" />
+          <Shield className="w-6 h-6 text-purple-600" />
           <h3 className="text-lg font-semibold text-gray-800">Travel Mode Settings</h3>
           {isPanicMode && (
             <span className="px-2 py-1 bg-orange-100 text-orange-700 text-xs font-medium rounded-full">
@@ -165,7 +168,7 @@ const Settings = () => {
                 ...travelSettings,
                 travel_mode_enabled: e.target.checked
               })}
-              className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+              className="w-4 h-4 text-purple-600 rounded focus:ring-purple-500"
             />
             <label htmlFor="travel-mode" className="text-sm font-medium text-gray-700">
               Enable Travel Mode
@@ -181,7 +184,7 @@ const Settings = () => {
                 ...travelSettings,
                 hide_stats: e.target.checked
               })}
-              className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+              className="w-4 h-4 text-purple-600 rounded focus:ring-purple-500"
             />
             <label htmlFor="hide-stats" className="text-sm font-medium text-gray-700">
               Hide Statistics (panic mode will show limited data)
@@ -203,7 +206,7 @@ const Settings = () => {
                       ...travelSettings,
                       panic_username: e.target.value
                     })}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     placeholder="Enter panic username"
                   />
                 </div>
@@ -222,7 +225,7 @@ const Settings = () => {
                       ...travelSettings,
                       panic_password: e.target.value
                     })}
-                    className="w-full pl-10 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full pl-10 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     placeholder="Enter panic password"
                   />
                   <button
@@ -240,7 +243,7 @@ const Settings = () => {
           <button
             type="submit"
             disabled={loading.travel}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50"
           >
             <Save className="w-4 h-4" />
             {loading.travel ? 'Saving...' : 'Save Travel Mode Settings'}
@@ -249,7 +252,7 @@ const Settings = () => {
       </div>
 
       {/* Password Change */}
-      <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 shadow-lg">
+      <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 shadow-lg border border-purple-100">
         <div className="flex items-center gap-3 mb-6">
           <Lock className="w-6 h-6 text-green-600" />
           <h3 className="text-lg font-semibold text-gray-800">Change Password</h3>
@@ -345,6 +348,32 @@ const Settings = () => {
         </form>
       </div>
 
+      {/* Danger Zone */}
+      <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 shadow-lg border border-red-200">
+        <div className="flex items-center gap-3 mb-6">
+          <Trash2 className="w-6 h-6 text-red-600" />
+          <h3 className="text-lg font-semibold text-gray-800">Danger Zone</h3>
+        </div>
+
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+          <div className="flex items-center gap-2 mb-2">
+            <AlertTriangle className="w-5 h-5 text-red-600" />
+            <h4 className="font-medium text-red-800">Delete Account</h4>
+          </div>
+          <p className="text-sm text-red-700">
+            Permanently delete your account and all associated data. This action cannot be undone.
+          </p>
+        </div>
+
+        <button
+          onClick={() => setShowDeleteModal(true)}
+          className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+        >
+          <Trash2 className="w-4 h-4" />
+          Delete Account
+        </button>
+      </div>
+
       {/* Success/Error Messages */}
       {success && (
         <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
@@ -357,6 +386,11 @@ const Settings = () => {
           <p className="text-sm text-red-600">{error}</p>
         </div>
       )}
+
+      <DeleteAccountModal 
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+      />
     </div>
   );
 };

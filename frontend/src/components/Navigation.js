@@ -27,19 +27,19 @@ const Navigation = () => {
   };
 
   return (
-    <nav className="fixed left-0 top-0 h-screen w-64 bg-white/80 backdrop-blur-xl border-r border-white/20 shadow-xl">
+    <nav className="hidden lg:block fixed left-0 top-0 h-screen w-64 bg-white/80 backdrop-blur-xl border-r border-white/20 shadow-xl">
       <div className="p-6">
         <div className="flex items-center gap-3 mb-8">
-          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+          <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center">
             <TrendingUp className="w-6 h-6 text-white" />
           </div>
-          <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-purple-600 bg-clip-text text-transparent">
             Budget Planner
           </h1>
         </div>
         
         {/* User info with panic mode indicator */}
-        <div className="mb-6 p-3 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl">
+        <div className="mb-6 p-3 bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl">
           <div className="flex items-center gap-2 mb-1">
             <p className="text-sm font-medium text-gray-800">
               {user?.full_name || user?.username}
@@ -61,8 +61,8 @@ const Navigation = () => {
                 to={path}
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
                   location.pathname === path
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
-                    : 'hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 text-gray-700'
+                    ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg'
+                    : 'hover:bg-gradient-to-r hover:from-purple-50 hover:to-purple-100 text-gray-700'
                 }`}
               >
                 <Icon className={`w-5 h-5 transition-transform group-hover:scale-110 ${
