@@ -14,6 +14,8 @@ const Layout = () => {
         return 'Transactions';
       case '/budget':
         return 'Budget';
+      case '/settings':
+        return 'Settings';
       default:
         return 'Budget Planner';
     }
