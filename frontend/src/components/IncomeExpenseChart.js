@@ -41,7 +41,7 @@ const IncomeExpenseChart = () => {
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white/90 backdrop-blur-xl p-3 rounded-lg shadow-lg border border-white/20">
+        <div className="bg-white/90 backdrop-blur-xl p-3 rounded-lg shadow-lg border border-purple-200">
           <p className="font-semibold text-gray-800">{label}</p>
           {payload.map((item, index) => (
             <p key={index} className="text-sm" style={{ color: item.color }}>
@@ -55,7 +55,7 @@ const IncomeExpenseChart = () => {
   };
 
   return (
-    <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 shadow-lg">
+    <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 shadow-lg border border-purple-100">
       <h3 className="text-lg font-semibold text-gray-800 mb-4">Monthly Overview</h3>
       
       <div className="h-80">
@@ -83,26 +83,16 @@ const IncomeExpenseChart = () => {
             <Tooltip content={<CustomTooltip />} />
             <Bar 
               dataKey="income" 
-              fill="url(#incomeGradient)" 
+              fill="#10b981" 
               radius={[4, 4, 0, 0]}
               className="hover:opacity-80 transition-opacity"
             />
             <Bar 
               dataKey="expenses" 
-              fill="url(#expenseGradient)" 
+              fill="#8b5cf6" 
               radius={[4, 4, 0, 0]}
               className="hover:opacity-80 transition-opacity"
             />
-            <defs>
-              <linearGradient id="incomeGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#10b981" stopOpacity={0.8}/>
-                <stop offset="95%" stopColor="#059669" stopOpacity={0.8}/>
-              </linearGradient>
-              <linearGradient id="expenseGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.8}/>
-                <stop offset="95%" stopColor="#e11d48" stopOpacity={0.8}/>
-              </linearGradient>
-            </defs>
           </BarChart>
         </ResponsiveContainer>
       </div>
