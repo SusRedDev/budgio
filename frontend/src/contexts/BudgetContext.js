@@ -151,6 +151,7 @@ export const BudgetProvider = ({ children }) => {
   const value = {
     transactions,
     budgets,
+    setBudgets,
     currentMonth,
     currentYear,
     loading,
