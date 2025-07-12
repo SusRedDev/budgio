@@ -9,7 +9,8 @@ import {
   Settings,
   LogOut,
   Shield,
-  X
+  X,
+  MessageCircle
 } from 'lucide-react';
 
 const MobileMenu = ({ isOpen, onClose }) => {
@@ -20,6 +21,7 @@ const MobileMenu = ({ isOpen, onClose }) => {
     { path: '/', label: 'Dashboard', icon: LayoutDashboard },
     { path: '/transactions', label: 'Transactions', icon: CreditCard },
     { path: '/budget', label: 'Budget', icon: PiggyBank },
+    { path: '/chat', label: 'Chat', icon: MessageCircle },
     { path: '/settings', label: 'Settings', icon: Settings },
   ];
 
