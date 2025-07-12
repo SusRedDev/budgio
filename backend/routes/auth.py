@@ -272,6 +272,25 @@ async def update_travel_mode(
     
     return {"message": "Travel mode settings updated successfully"}
 
+@router.delete("/delete-account")
+async def delete_account(current_user: TokenData = Depends(get_current_active_user)):
+    """Delete user account and all associated data"""
+    try:
+        # Get all collections that contain user data
+        users_collection = db.users
+        transactions_collection = db.transactions
+        budgets_collection = db.budgets
+        
+        # Delete all user data
+        await transactions_collection.delete_many({"user_id": current_user.user_id})
+        await budgets_collection.delete_many({"user_id": current_user.user_id})
+        await users_collection.delete_one({"id": current_user.user_id})
+        
+        return {"message": "Account deleted successfully"}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error deleting account: {str(e)}")
+
 @router.post("/change-password", response_model=dict)
 async def change_password(
     password_data: PasswordUpdate,
