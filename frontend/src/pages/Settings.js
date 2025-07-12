@@ -139,6 +139,19 @@ const Settings = () => {
         </div>
       </div>
 
+      {/* Language Settings */}
+      <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 shadow-lg border border-purple-100">
+        <div className="flex items-center gap-3 mb-6">
+          <Globe className="w-6 h-6 text-blue-600" />
+          <h3 className="text-lg font-semibold text-gray-800">Language Settings</h3>
+        </div>
+
+        <LanguageSelector 
+          language={language}
+          onLanguageChange={changeLanguage}
+        />
+      </div>
+
       {/* Travel Mode Settings */}
       <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 shadow-lg border border-purple-100">
         <div className="flex items-center gap-3 mb-6">
