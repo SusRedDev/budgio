@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import DeleteAccountModal from '../components/DeleteAccountModal';
+import LanguageSelector from '../components/LanguageSelector';
 import { 
   Shield, 
   ShieldOff, 
@@ -10,7 +12,8 @@ import {
   User, 
   Save,
   AlertTriangle,
-  Trash2
+  Trash2,
+  Globe
 } from 'lucide-react';
 
 const Settings = () => {
