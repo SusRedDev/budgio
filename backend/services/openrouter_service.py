@@ -56,7 +56,7 @@ Use this context to provide personalized financial advice. Reference specific nu
     async def _make_api_call(self, messages: List[Dict]) -> str:
         """Make the actual API call to OpenRouter"""
         try:
-            response = self.client.chat.completions.create(
+            response = await self.client.chat.completions.create(
                 model="deepseek/deepseek-r1-0528:free",
                 messages=messages,
                 max_tokens=800,
