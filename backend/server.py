@@ -96,6 +96,9 @@ async def startup_event():
         await db.users.create_index("email", unique=True)
         await db.users.create_index("id", unique=True)
         
+        await db.chat_sessions.create_index([("session_id", 1), ("user_id", 1)], unique=True)
+        await db.chat_sessions.create_index([("user_id", 1), ("last_accessed", -1)])
+        
         logger.info("Database indexes created successfully")
     except Exception as e:
         logger.error(f"Error creating database indexes: {e}")
