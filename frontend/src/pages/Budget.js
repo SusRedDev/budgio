@@ -295,6 +295,16 @@ const Budget = () => {
           })}
         </div>
       </div>
+
+      <BudgetDeleteModal
+        isOpen={showDeleteModal}
+        onClose={() => {
+          setShowDeleteModal(false);
+          setBudgetToDelete(null);
+        }}
+        onConfirm={() => handleDeleteBudget(budgetToDelete)}
+        budgetCategory={budgetToDelete}
+      />
     </div>
   );
 };
