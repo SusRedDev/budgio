@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useBudget } from '../contexts/BudgetContext';
 import { CATEGORIES } from '../data/mockData';
-import { Target, TrendingUp, AlertCircle, Plus } from 'lucide-react';
+import BudgetDeleteModal from '../components/BudgetDeleteModal';
+import { Target, TrendingUp, AlertCircle, Plus, Trash2 } from 'lucide-react';
 
 const Budget = () => {
   const { budgets, getCategoryTotals, updateBudget } = useBudget();
