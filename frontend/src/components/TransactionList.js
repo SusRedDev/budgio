@@ -2,7 +2,7 @@ import React from 'react';
 import { useBudget } from '../contexts/BudgetContext';
 import { Edit2, Trash2, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 
-const TransactionList = ({ filters, onEdit }) => {
+const TransactionList = ({ filters, sortConfig, onEdit }) => {
   const { getMonthlyTransactions, deleteTransaction } = useBudget();
   
   const filteredTransactions = getMonthlyTransactions()
@@ -12,9 +12,61 @@ const TransactionList = ({ filters, onEdit }) => {
       const matchesSearch = transaction.description.toLowerCase().includes(filters.search.toLowerCase()) ||
                            transaction.category.toLowerCase().includes(filters.search.toLowerCase());
       
-      return matchesType && matchesCategory && matchesSearch;
+      // Amount range filtering
+      let matchesAmount = true;
+      if (filters.amountRange !== 'all') {
+        const amount = transaction.amount;
+        switch (filters.amountRange) {
+          case '0-100':
+            matchesAmount = amount >= 0 && amount <= 100;
+            break;
+          case '100-500':
+            matchesAmount = amount > 100 && amount <= 500;
+            break;
+          case '500-1000':
+            matchesAmount = amount > 500 && amount <= 1000;
+            break;
+          case '1000+':
+            matchesAmount = amount > 1000;
+            break;
+          default:
+            matchesAmount = true;
+        }
+      }
+      
+      return matchesType && matchesCategory && matchesSearch && matchesAmount;
     })
-    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    .sort((a, b) => {
+      let aValue, bValue;
+      
+      switch (sortConfig.field) {
+        case 'date':
+          aValue = new Date(a.date);
+          bValue = new Date(b.date);
+          break;
+        case 'amount':
+          aValue = a.amount;
+          bValue = b.amount;
+          break;
+        case 'description':
+          aValue = a.description.toLowerCase();
+          bValue = b.description.toLowerCase();
+          break;
+        case 'category':
+          aValue = a.category.toLowerCase();
+          bValue = b.category.toLowerCase();
+          break;
+        default:
+          aValue = new Date(a.created_at || a.date);
+          bValue = new Date(b.created_at || b.date);
+      }
+      
+      if (sortConfig.direction === 'asc') {
+        return aValue > bValue ? 1 : -1;
+      } else {
+        return aValue < bValue ? 1 : -1;
+      }
+    });
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -34,6 +86,20 @@ const TransactionList = ({ filters, onEdit }) => {
     }
   };
 
+  const getStatusBadge = (transaction) => {
+    const isRecent = new Date() - new Date(transaction.date) < 7 * 24 * 60 * 60 * 1000; // Within 7 days
+    
+    return (
+      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+        isRecent 
+          ? 'bg-green-100 text-green-700' 
+          : 'bg-gray-100 text-gray-600'
+      }`}>
+        {isRecent ? 'Recent' : 'Completed'}
+      </span>
+    );
+  };
+
   return (
     <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 shadow-lg">
       <div className="flex items-center justify-between mb-6">
@@ -47,7 +113,7 @@ const TransactionList = ({ filters, onEdit }) => {
           filteredTransactions.map((transaction) => (
             <div
               key={transaction.id}
-              className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 transition-all duration-200 group"
+              className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-gray-50 to-gray-100 hover:from-purple-50 hover:to-blue-50 transition-all duration-200 group border border-gray-100 hover:border-purple-200"
             >
               <div className="flex items-center gap-4">
                 <div className={`p-3 rounded-full ${
@@ -65,13 +131,14 @@ const TransactionList = ({ filters, onEdit }) => {
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-1">
                     <p className="font-medium text-gray-800">{transaction.description}</p>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                       transaction.type === 'income' 
                         ? 'bg-green-100 text-green-700' 
                         : 'bg-red-100 text-red-700'
                     }`}>
                       {transaction.category}
                     </span>
+                    {getStatusBadge(transaction)}
                   </div>
                   <div className="flex items-center gap-2 text-sm text-gray-500">
                     <span>{formatDate(transaction.date)}</span>
@@ -91,7 +158,7 @@ const TransactionList = ({ filters, onEdit }) => {
                 <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                   <button
                     onClick={() => onEdit(transaction)}
-                    className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
+                    className="p-2 text-purple-600 hover:bg-purple-100 rounded-lg transition-colors"
                   >
                     <Edit2 className="w-4 h-4" />
                   </button>
