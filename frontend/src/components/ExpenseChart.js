@@ -18,15 +18,15 @@ const ExpenseChart = ({ categoryTotals }) => {
   }));
 
   const COLORS = [
-    '#FF6B9D', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', 
-    '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9'
+    '#8B5CF6', '#F59E0B', '#EF4444', '#10B981', '#3B82F6', 
+    '#F97316', '#06B6D4', '#84CC16', '#EC4899', '#6366F1'
   ];
 
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
-        <div className="bg-white/90 backdrop-blur-xl p-3 rounded-lg shadow-lg border border-white/20">
+        <div className="bg-white/90 backdrop-blur-xl p-3 rounded-lg shadow-lg border border-purple-200">
           <p className="font-semibold text-gray-800">{data.name}</p>
           <p className="text-sm text-gray-600">
             ${data.value.toLocaleString()} ({data.percentage}%)
@@ -38,7 +38,7 @@ const ExpenseChart = ({ categoryTotals }) => {
   };
 
   return (
-    <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 shadow-lg">
+    <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 shadow-lg border border-purple-100">
       <h3 className="text-lg font-semibold text-gray-800 mb-4">Expense Breakdown</h3>
       
       {dataWithPercentages.length > 0 ? (
