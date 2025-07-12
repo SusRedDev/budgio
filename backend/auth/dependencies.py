@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from pathlib import Path
 
 from .security import verify_token
-from ..models.user import User, TokenData
+from models.user import User, TokenData
 
 # Load environment variables
 ROOT_DIR = Path(__file__).parent.parent
