@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from typing import List
 from datetime import datetime
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from pathlib import Path
 
 from models.budget import Budget, BudgetCreate, BudgetUpdate
+from auth.dependencies import get_current_active_user, check_travel_mode, TokenData
 
 # Load environment variables
 ROOT_DIR = Path(__file__).parent.parent
