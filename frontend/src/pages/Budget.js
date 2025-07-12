@@ -16,6 +16,34 @@ const Budget = () => {
   const categoryTotals = getCategoryTotals();
   const expenseCategories = CATEGORIES.expense;
 
+  const handleDeleteBudget = async (category) => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/budgets/${category}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      
+      if (response.ok) {
+        // Remove from local state
+        setBudgets(prev => prev.filter(b => b.category !== category));
+        setShowDeleteModal(false);
+        setBudgetToDelete(null);
+      } else {
+        alert('Error deleting budget');
+      }
+    } catch (error) {
+      console.error('Error deleting budget:', error);
+      alert('Error deleting budget: ' + error.message);
+    }
+  };
+
+  const openDeleteModal = (category) => {
+    setBudgetToDelete(category);
+    setShowDeleteModal(true);
+  };
+
   const getBudgetForCategory = (category) => {
     return budgets.find(b => b.category === category);
   };
