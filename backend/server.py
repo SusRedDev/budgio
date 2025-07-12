@@ -52,6 +52,7 @@ async def health_check():
         }
 
 # Include routers
+api_router.include_router(auth_router, tags=["authentication"])
 api_router.include_router(transactions_router, tags=["transactions"])
 api_router.include_router(budgets_router, tags=["budgets"])
 
