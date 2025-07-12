@@ -7,15 +7,15 @@ import os
 from dotenv import load_dotenv
 from pathlib import Path
 
-from ..models.user import (
+from models.user import (
     User, UserCreate, UserLogin, UserResponse, Token, 
     TravelModeUpdate, PasswordUpdate, PanicCredentials
 )
-from ..auth.security import (
+from auth.security import (
     verify_password, get_password_hash, create_access_token, 
     validate_password_strength, ACCESS_TOKEN_EXPIRE_MINUTES
 )
-from ..auth.dependencies import get_current_active_user, TokenData
+from auth.dependencies import get_current_active_user, TokenData
 
 # Load environment variables
 ROOT_DIR = Path(__file__).parent.parent
