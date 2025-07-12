@@ -18,6 +18,7 @@ import {
 
 const Settings = () => {
   const { user, updateTravelMode, changePassword, isPanicMode } = useAuth();
+  const { language, changeLanguage } = useLanguage();
   const [travelSettings, setTravelSettings] = useState({
     travel_mode_enabled: user?.settings?.travel_mode?.travel_mode_enabled || false,
     hide_stats: user?.settings?.travel_mode?.hide_stats || false,
