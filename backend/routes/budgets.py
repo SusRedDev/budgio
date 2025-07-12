@@ -22,10 +22,13 @@ db = client[os.environ['DB_NAME']]
 collection = db.budgets
 
 @router.get("/budgets", response_model=List[Budget])
-async def get_budgets():
+async def get_budgets(
+    current_user: TokenData = Depends(get_current_active_user),
+    _: bool = Depends(check_travel_mode)
+):
     """Get all budgets"""
     try:
-        cursor = collection.find({}).sort("category", 1)
+        cursor = collection.find({"user_id": current_user.user_id}).sort("category", 1)
         budgets = await cursor.to_list(length=None)
         
         return [Budget(**budget) for budget in budgets]
@@ -34,11 +37,18 @@ async def get_budgets():
         raise HTTPException(status_code=500, detail=f"Error fetching budgets: {str(e)}")
 
 @router.post("/budgets", response_model=Budget)
-async def create_budget(budget: BudgetCreate):
+async def create_budget(
+    budget: BudgetCreate,
+    current_user: TokenData = Depends(get_current_active_user),
+    _: bool = Depends(check_travel_mode)
+):
     """Create a new budget"""
     try:
         # Check if budget for this category already exists
-        existing_budget = await collection.find_one({"category": budget.category})
+        existing_budget = await collection.find_one({
+            "category": budget.category,
+            "user_id": current_user.user_id
+        })
         
         if existing_budget:
             raise HTTPException(
@@ -49,6 +59,7 @@ async def create_budget(budget: BudgetCreate):
         # Create budget object
         budget_obj = Budget(**budget.dict())
         budget_dict = budget_obj.dict()
+        budget_dict["user_id"] = current_user.user_id
         
         # Insert into database
         result = await collection.insert_one(budget_dict)
@@ -64,10 +75,17 @@ async def create_budget(budget: BudgetCreate):
         raise HTTPException(status_code=500, detail=f"Error creating budget: {str(e)}")
 
 @router.get("/budgets/{category}")
-async def get_budget_by_category(category: str):
+async def get_budget_by_category(
+    category: str,
+    current_user: TokenData = Depends(get_current_active_user),
+    _: bool = Depends(check_travel_mode)
+):
     """Get budget by category"""
     try:
-        budget = await collection.find_one({"category": category})
+        budget = await collection.find_one({
+            "category": category,
+            "user_id": current_user.user_id
+        })
         
         if budget:
             return Budget(**budget)
@@ -80,11 +98,19 @@ async def get_budget_by_category(category: str):
         raise HTTPException(status_code=500, detail=f"Error fetching budget: {str(e)}")
 
 @router.put("/budgets/{category}", response_model=Budget)
-async def update_budget(category: str, budget_update: BudgetUpdate):
+async def update_budget(
+    category: str,
+    budget_update: BudgetUpdate,
+    current_user: TokenData = Depends(get_current_active_user),
+    _: bool = Depends(check_travel_mode)
+):
     """Update or create a budget for a category"""
     try:
         # Check if budget exists
-        existing_budget = await collection.find_one({"category": category})
+        existing_budget = await collection.find_one({
+            "category": category,
+            "user_id": current_user.user_id
+        })
         
         if existing_budget:
             # Update existing budget
@@ -92,12 +118,15 @@ async def update_budget(category: str, budget_update: BudgetUpdate):
             update_data["updated_at"] = datetime.utcnow()
             
             result = await collection.update_one(
-                {"category": category},
+                {"category": category, "user_id": current_user.user_id},
                 {"$set": update_data}
             )
             
             if result.modified_count == 1:
-                updated_budget = await collection.find_one({"category": category})
+                updated_budget = await collection.find_one({
+                    "category": category,
+                    "user_id": current_user.user_id
+                })
                 return Budget(**updated_budget)
             else:
                 raise HTTPException(status_code=500, detail="Failed to update budget")
@@ -106,6 +135,7 @@ async def update_budget(category: str, budget_update: BudgetUpdate):
             budget_data = {"category": category, **budget_update.dict(exclude_unset=True)}
             budget_obj = Budget(**budget_data)
             budget_dict = budget_obj.dict()
+            budget_dict["user_id"] = current_user.user_id
             
             result = await collection.insert_one(budget_dict)
             
@@ -120,10 +150,17 @@ async def update_budget(category: str, budget_update: BudgetUpdate):
         raise HTTPException(status_code=500, detail=f"Error updating budget: {str(e)}")
 
 @router.delete("/budgets/{category}")
-async def delete_budget(category: str):
+async def delete_budget(
+    category: str,
+    current_user: TokenData = Depends(get_current_active_user),
+    _: bool = Depends(check_travel_mode)
+):
     """Delete a budget"""
     try:
-        result = await collection.delete_one({"category": category})
+        result = await collection.delete_one({
+            "category": category,
+            "user_id": current_user.user_id
+        })
         
         if result.deleted_count == 1:
             return {"message": "Budget deleted successfully"}
@@ -137,6 +174,8 @@ async def delete_budget(category: str):
 
 @router.get("/budgets/status/summary")
 async def get_budget_status_summary(
+    current_user: TokenData = Depends(get_current_active_user),
+    _: bool = Depends(check_travel_mode),
     month: int = None,
     year: int = None
 ):
@@ -148,8 +187,8 @@ async def get_budget_status_summary(
             month = month or now.month
             year = year or now.year
         
-        # Get all budgets
-        budget_cursor = collection.find({})
+        # Get all budgets for current user
+        budget_cursor = collection.find({"user_id": current_user.user_id})
         budgets = await budget_cursor.to_list(length=None)
         
         # Get spending data from transactions
@@ -162,10 +201,11 @@ async def get_budget_status_summary(
         else:
             end_date = f"{year}-{month + 1:02d}-01"
         
-        # Aggregate spending by category
+        # Aggregate spending by category for current user
         spending_pipeline = [
             {
                 "$match": {
+                    "user_id": current_user.user_id,
                     "type": "expense",
                     "date": {
                         "$gte": start_date,
