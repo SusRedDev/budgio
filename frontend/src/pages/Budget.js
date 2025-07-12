@@ -5,7 +5,7 @@ import BudgetDeleteModal from '../components/BudgetDeleteModal';
 import { Target, TrendingUp, AlertCircle, Plus, Trash2 } from 'lucide-react';
 
 const Budget = () => {
-  const { budgets, getCategoryTotals, updateBudget } = useBudget();
+  const { budgets, setBudgets, getCategoryTotals, updateBudget } = useBudget();
   const [editingBudget, setEditingBudget] = useState(null);
   const [newBudgetAmount, setNewBudgetAmount] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
