@@ -83,7 +83,7 @@ const PeriodFilter = () => {
       </button>
 
       {showDropdown && (
-        <div className="absolute top-full right-0 mt-2 w-80 bg-white rounded-xl shadow-xl border border-gray-200 z-50">
+        <div className="absolute top-full right-0 mt-2 w-80 bg-white rounded-xl shadow-xl border border-gray-200 z-[9999]">
           <div className="p-4">
             {/* Filter Type Selection */}
             <div className="grid grid-cols-4 gap-2 mb-4">
