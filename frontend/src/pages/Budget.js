@@ -10,6 +10,8 @@ const Budget = () => {
   const [newBudgetAmount, setNewBudgetAmount] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
   const [newCategory, setNewCategory] = useState('');
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [budgetToDelete, setBudgetToDelete] = useState(null);
 
   const categoryTotals = getCategoryTotals();
   const expenseCategories = CATEGORIES.expense;
