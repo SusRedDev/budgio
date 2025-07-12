@@ -83,9 +83,16 @@ async def startup_event():
         await db.transactions.create_index("date")
         await db.transactions.create_index("type")
         await db.transactions.create_index("category")
+        await db.transactions.create_index("user_id")
         await db.transactions.create_index("created_at")
         
-        await db.budgets.create_index("category", unique=True)
+        await db.budgets.create_index("category")
+        await db.budgets.create_index("user_id")
+        await db.budgets.create_index([("category", 1), ("user_id", 1)], unique=True)
+        
+        await db.users.create_index("username", unique=True)
+        await db.users.create_index("email", unique=True)
+        await db.users.create_index("id", unique=True)
         
         logger.info("Database indexes created successfully")
     except Exception as e:
