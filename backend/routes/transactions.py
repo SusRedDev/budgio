@@ -23,6 +23,8 @@ collection = db.transactions
 
 @router.get("/transactions", response_model=List[Transaction])
 async def get_transactions(
+    current_user: TokenData = Depends(get_current_active_user),
+    _: bool = Depends(check_travel_mode),
     type: Optional[str] = Query(None, description="Filter by type: income or expense"),
     category: Optional[str] = Query(None, description="Filter by category"),
     month: Optional[int] = Query(None, description="Filter by month (1-12)"),
@@ -31,8 +33,8 @@ async def get_transactions(
 ):
     """Get transactions with optional filters"""
     try:
-        # Build filter query
-        filter_query = {}
+        # Build filter query - include user_id
+        filter_query = {"user_id": current_user.user_id}
         
         if type and type in ["income", "expense"]:
             filter_query["type"] = type
@@ -70,12 +72,17 @@ async def get_transactions(
         raise HTTPException(status_code=500, detail=f"Error fetching transactions: {str(e)}")
 
 @router.post("/transactions", response_model=Transaction)
-async def create_transaction(transaction: TransactionCreate):
+async def create_transaction(
+    transaction: TransactionCreate,
+    current_user: TokenData = Depends(get_current_active_user),
+    _: bool = Depends(check_travel_mode)
+):
     """Create a new transaction"""
     try:
-        # Create transaction object
+        # Create transaction object with user_id
         transaction_obj = Transaction(**transaction.dict())
         transaction_dict = transaction_obj.dict()
+        transaction_dict["user_id"] = current_user.user_id
         
         # Insert into database
         result = await collection.insert_one(transaction_dict)
@@ -89,10 +96,17 @@ async def create_transaction(transaction: TransactionCreate):
         raise HTTPException(status_code=500, detail=f"Error creating transaction: {str(e)}")
 
 @router.get("/transactions/{transaction_id}", response_model=Transaction)
-async def get_transaction(transaction_id: str):
+async def get_transaction(
+    transaction_id: str,
+    current_user: TokenData = Depends(get_current_active_user),
+    _: bool = Depends(check_travel_mode)
+):
     """Get a specific transaction by ID"""
     try:
-        transaction = await collection.find_one({"id": transaction_id})
+        transaction = await collection.find_one({
+            "id": transaction_id,
+            "user_id": current_user.user_id
+        })
         
         if transaction:
             return Transaction(**transaction)
@@ -103,11 +117,19 @@ async def get_transaction(transaction_id: str):
         raise HTTPException(status_code=500, detail=f"Error fetching transaction: {str(e)}")
 
 @router.put("/transactions/{transaction_id}", response_model=Transaction)
-async def update_transaction(transaction_id: str, transaction_update: TransactionUpdate):
+async def update_transaction(
+    transaction_id: str,
+    transaction_update: TransactionUpdate,
+    current_user: TokenData = Depends(get_current_active_user),
+    _: bool = Depends(check_travel_mode)
+):
     """Update a transaction"""
     try:
         # Get existing transaction
-        existing_transaction = await collection.find_one({"id": transaction_id})
+        existing_transaction = await collection.find_one({
+            "id": transaction_id,
+            "user_id": current_user.user_id
+        })
         
         if not existing_transaction:
             raise HTTPException(status_code=404, detail="Transaction not found")
@@ -118,13 +140,16 @@ async def update_transaction(transaction_id: str, transaction_update: Transactio
         
         # Update in database
         result = await collection.update_one(
-            {"id": transaction_id},
+            {"id": transaction_id, "user_id": current_user.user_id},
             {"$set": update_data}
         )
         
         if result.modified_count == 1:
             # Return updated transaction
-            updated_transaction = await collection.find_one({"id": transaction_id})
+            updated_transaction = await collection.find_one({
+                "id": transaction_id,
+                "user_id": current_user.user_id
+            })
             return Transaction(**updated_transaction)
         else:
             raise HTTPException(status_code=500, detail="Failed to update transaction")
@@ -135,10 +160,17 @@ async def update_transaction(transaction_id: str, transaction_update: Transactio
         raise HTTPException(status_code=500, detail=f"Error updating transaction: {str(e)}")
 
 @router.delete("/transactions/{transaction_id}")
-async def delete_transaction(transaction_id: str):
+async def delete_transaction(
+    transaction_id: str,
+    current_user: TokenData = Depends(get_current_active_user),
+    _: bool = Depends(check_travel_mode)
+):
     """Delete a transaction"""
     try:
-        result = await collection.delete_one({"id": transaction_id})
+        result = await collection.delete_one({
+            "id": transaction_id,
+            "user_id": current_user.user_id
+        })
         
         if result.deleted_count == 1:
             return {"message": "Transaction deleted successfully"}
@@ -152,6 +184,8 @@ async def delete_transaction(transaction_id: str):
 
 @router.get("/transactions/summary/monthly")
 async def get_monthly_summary(
+    current_user: TokenData = Depends(get_current_active_user),
+    _: bool = Depends(check_travel_mode),
     month: int = Query(..., ge=1, le=12, description="Month (1-12)"),
     year: int = Query(..., ge=2000, le=2100, description="Year")
 ):
@@ -164,10 +198,11 @@ async def get_monthly_summary(
         else:
             end_date = f"{year}-{month + 1:02d}-01"
         
-        # Aggregate transactions
+        # Aggregate transactions for current user
         pipeline = [
             {
                 "$match": {
+                    "user_id": current_user.user_id,
                     "date": {
                         "$gte": start_date,
                         "$lt": end_date
