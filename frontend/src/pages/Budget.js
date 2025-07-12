@@ -234,15 +234,25 @@ const Budget = () => {
                       </button>
                     </div>
                   ) : (
-                    <button
-                      onClick={() => {
-                        setEditingBudget(category);
-                        setNewBudgetAmount(status.budget?.toString() || '');
-                      }}
-                      className="text-sm text-blue-600 hover:text-blue-800"
-                    >
-                      {status.status === 'none' ? 'Set Budget' : 'Edit'}
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => {
+                          setEditingBudget(category);
+                          setNewBudgetAmount(status.budget?.toString() || '');
+                        }}
+                        className="text-sm text-blue-600 hover:text-blue-800"
+                      >
+                        {status.status === 'none' ? 'Set Budget' : 'Edit'}
+                      </button>
+                      {status.status !== 'none' && (
+                        <button
+                          onClick={() => openDeleteModal(category)}
+                          className="p-1 text-red-500 hover:text-red-700 transition-colors"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
                   )}
                 </div>
 
