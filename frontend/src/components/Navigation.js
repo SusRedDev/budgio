@@ -36,7 +36,7 @@ const Navigation = () => {
             <TrendingUp className="w-6 h-6 text-white" />
           </div>
           <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-purple-600 bg-clip-text text-transparent">
-            Budget Planner
+            Budgio
           </h1>
         </div>
         
